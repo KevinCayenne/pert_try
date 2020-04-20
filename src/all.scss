@@ -4,3 +4,10 @@ $primary: white;
 body{
     background-color: $primary;
 }
+
+#sample{
+    position: sticky;
+    top: 0px;
+    background-color: white;
+    z-index: 500;
+}

@@ -92,7 +92,10 @@ function linkColorConverter(linkdata, elt) {
 // This is computed by the binding converter function.
 myDiagram.linkTemplate =
     $(go.Link,
-        { toShortLength: 6, toEndSegmentLength: 20 },
+        {   
+            toShortLength: 6, 
+            toEndSegmentLength: 20,
+        },
         $(go.Shape,
             { strokeWidth: 4 },
             new go.Binding("stroke", "", linkColorConverter)
@@ -128,27 +131,26 @@ var nodeDataArray = [
 ];
 
 var linkDataArray = [
-    { from: 1, to: 2 },
-    { from: 1, to: 3 },
-    { from: 1, to: 4 },
-    { from: 2, to: 5 },
-    { from: 2, to: 6 },
-    { from: 6, to: 8 },
-    { from: 8, to: 12 },
-    { from: 8, to: 9 },
-    { from: 9, to: 11 },
-    { from: 12, to: 13 },
-    { from: 11, to: 13 },
-    { from: 13, to: 15 },
-    { from: 4, to: 7 },
-    { from: 8, to: 10 },
-    { from: 10, to: 14 },
-    { from: 7, to: 9 },
-    { from: 5, to: 8 },
-    { from: 3, to: 8 },
-    { from: 6, to: 14 },
-    { from: 14, to: 16 },
-    { from: 15, to: 16 },
+    { from: 1, to: 2, mode: 'FS'},
+    { from: 1, to: 3, mode: 'FS'},
+    { from: 1, to: 4, mode: 'FS'},
+    { from: 2, to: 5, mode: 'FS'},
+    { from: 2, to: 6, mode: 'FS'},
+    { from: 6, to: 8, mode: 'FS'},
+    { from: 8, to: 12, mode: 'FS'},
+    { from: 9, to: 11, mode: 'FS'},
+    { from: 12, to: 13, mode: 'FS'},
+    { from: 11, to: 13, mode: 'FS'},
+    { from: 13, to: 15, mode: 'FS'},
+    { from: 4, to: 7, mode: 'FS'},
+    { from: 8, to: 10, mode: 'FS'},
+    { from: 10, to: 14, mode: 'FS'},
+    { from: 7, to: 9, mode: 'FS'},
+    { from: 5, to: 8, mode: 'FS'},
+    { from: 3, to: 8, mode: 'FS'},
+    { from: 6, to: 14, mode: 'FS'},
+    { from: 14, to: 16, mode: 'FS'},
+    { from: 15, to: 16, mode: 'FS'},
 ];
 
 // convert obj array to array array structure
@@ -201,7 +203,7 @@ $(go.Node, "Auto",
     )  // end Table Panel
 ));
 
-new Vue({
+var controlPannel = new Vue({
     el: '#control-panel',
     data: {
         todo: nodeDataArray

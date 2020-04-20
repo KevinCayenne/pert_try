@@ -132,6 +132,7 @@ export default {
     },
 
     fillRestItem(data, link){
+        // calculate ES EF
         for(let i in data){
             if(!data[i].critical){
                 let tempPreArr = [];
@@ -150,8 +151,10 @@ export default {
                 data[i].earlyFinish = data[i].length + data[i].earlyStart;
             }   
         }
+        
         var revData = [...data].reverse();
 
+        // calculate LS LF
         for(let rei in revData){
             if(!revData[rei].critical){
                 let tempAfterArr = [];
@@ -169,7 +172,7 @@ export default {
                     }
                 }
                 // console.log(tempLateStartArr);
-                revData[rei].lateFinish = Math.max.apply(null, tempLateStartArr);
+                revData[rei].lateFinish = Math.min.apply(null, tempLateStartArr);
                 revData[rei].lateStart = revData[rei].lateFinish - revData[rei].length;
             }
         }

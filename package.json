@@ -14,6 +14,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@vue/cli": "^4.3.1",
     "css-loader": "^3.5.2",
     "gojs": "^2.1.13",
     "html-webpack-plugin": "^4.2.0",
@@ -24,6 +25,7 @@
     "sass": "^1.26.3",
     "sass-loader": "^8.0.2",
     "style-loader": "^1.1.4",
+    "vue-cli": "^2.9.6",
     "webpack": "^4.42.1",
     "webpack-cli": "^3.3.11"
   },

@@ -77,7 +77,7 @@ $(go.Node, "Auto",
 // But note that if we were to dynamically change the ".critical" property on a node data,
 // calling myDiagram.model.updateTargetBindings(nodedata) would only update the color
 // of the nodes.  It would be insufficient to change the appearance of any Links.
-function linkColorConverter(linkdata, elt) {
+function linkColorConverter(linkdata, elt){
     var link = elt.part;
     if (!link) return blue;
     var f = link.fromNode;
@@ -85,6 +85,34 @@ function linkColorConverter(linkdata, elt) {
     var t = link.toNode;
     if (!t || !t.data || !t.data.critical) return blue;
     return pink;  // when both Link.fromNode.data.critical and Link.toNode.data.critical
+}
+
+function linkPointerFrom(linkdata, elt){
+    var link = elt.part;
+    var mode = link.mode;
+    if(mode == 'FS'){
+        return go.Spot.Right;
+    }else if(mode == 'FF'){
+        return go.Spot.Right;
+    }else if(mode == 'SF'){
+        return go.Spot.Left;
+    }else if(mode == 'SS'){
+        return go.Spot.Left;
+    }
+}
+
+function linkPointerTo(linkdata, elt){
+    var link = elt.part;
+    var mode = link.mode;
+    if(mode == 'FS'){
+        return go.Spot.Left;
+    }else if(mode == 'FF'){
+        return go.Spot.Left;
+    }else if(mode == 'SF'){
+        return go.Spot.Right;
+    }else if(mode == 'SS'){
+        return go.Spot.Right;
+    }
 }
 
 // The color of a link (including its arrowhead) is red only when both
@@ -110,48 +138,60 @@ myDiagram.linkTemplate =
  * Example usage.
  **/
 
-// here's the data defining the graph
 var nodeDataArray = [
     { key: 1, text: "1", length: 1, earlyStart: 0, earlyFinish: 0, lateStart: 0, lateFinish: 0, critical: false },
-    { key: 2, text: "2", length: 9, earlyStart: 0, earlyFinish: 0, lateStart: 0, lateFinish: 0, critical: false },
-    { key: 3, text: "3", length: 17, earlyStart: 0, earlyFinish: 0, lateStart: 0, lateFinish: 0, critical: false },
-    { key: 4, text: "4", length: 9, earlyStart: 0, earlyFinish: 0, lateStart: 0, lateFinish: 0, critical: false },
-    { key: 5, text: "5", length: 2, earlyStart: 0, earlyFinish: 0, lateStart: 0, lateFinish: 0, critical: false },
-    { key: 6, text: "6", length: 10, earlyStart: 0, earlyFinish: 0, lateStart: 0, lateFinish: 0, critical: false },
-    { key: 7, text: "7", length: 12, earlyStart: 0, earlyFinish: 0, lateStart: 0, lateFinish: 0, critical: false },
-    { key: 8, text: "8", length: 5, earlyStart: 0, earlyFinish: 0, lateStart: 0, lateFinish: 0, critical: false },
-    { key: 9, text: "9", length: 17, earlyStart: 0, earlyFinish: 0, lateStart: 0, lateFinish: 0, critical: false },
-    { key: 10, text: "10", length: 3, earlyStart: 0, earlyFinish: 0, lateStart: 0, lateFinish: 0, critical: false },
-    { key: 11, text: "11", length: 14, earlyStart: 0, earlyFinish: 0, lateStart: 0, lateFinish: 0, critical: false },
-    { key: 12, text: "12", length: 3, earlyStart: 0, earlyFinish: 0, lateStart: 0, lateFinish: 0, critical: false },
-    { key: 13, text: "13", length: 10, earlyStart: 0, earlyFinish: 0, lateStart: 0, lateFinish: 0, critical: false },
-    { key: 14, text: "14", length: 4, earlyStart: 0, earlyFinish: 0, lateStart: 0, lateFinish: 0, critical: false },
-    { key: 15, text: "15", length: 9, earlyStart: 0, earlyFinish: 0, lateStart: 0, lateFinish: 0, critical: false },
-    { key: 16, text: "16", length: 3, earlyStart: 0, earlyFinish: 0, lateStart: 0, lateFinish: 0, critical: false },
+    { key: 2, text: "2", length: 4, earlyStart: 0, earlyFinish: 0, lateStart: 0, lateFinish: 0, critical: false },
+    { key: 3, text: "3", length: 2, earlyStart: 0, earlyFinish: 0, lateStart: 0, lateFinish: 0, critical: false },
 ];
 
 var linkDataArray = [
     { from: 1, to: 2, mode: 'FS'},
     { from: 1, to: 3, mode: 'FS'},
-    { from: 1, to: 4, mode: 'FS'},
-    { from: 2, to: 5, mode: 'FS'},
-    { from: 2, to: 6, mode: 'FS'},
-    { from: 6, to: 8, mode: 'FS'},
-    { from: 8, to: 12, mode: 'FS'},
-    { from: 9, to: 11, mode: 'FS'},
-    { from: 12, to: 13, mode: 'FS'},
-    { from: 11, to: 13, mode: 'FS'},
-    { from: 13, to: 15, mode: 'FS'},
-    { from: 4, to: 7, mode: 'FS'},
-    { from: 8, to: 10, mode: 'FS'},
-    { from: 10, to: 14, mode: 'FS'},
-    { from: 7, to: 9, mode: 'FS'},
-    { from: 5, to: 8, mode: 'FS'},
-    { from: 3, to: 8, mode: 'FS'},
-    { from: 6, to: 14, mode: 'FS'},
-    { from: 14, to: 16, mode: 'FS'},
-    { from: 15, to: 16, mode: 'FS'},
+    { from: 2, to: 3, mode: 'FF'},
 ];
+
+// here's the data defining the graph
+// var nodeDataArray = [
+//     { key: 1, text: "1", length: 1, earlyStart: 0, earlyFinish: 0, lateStart: 0, lateFinish: 0, critical: false },
+//     { key: 2, text: "2", length: 9, earlyStart: 0, earlyFinish: 0, lateStart: 0, lateFinish: 0, critical: false },
+//     { key: 3, text: "3", length: 17, earlyStart: 0, earlyFinish: 0, lateStart: 0, lateFinish: 0, critical: false },
+//     { key: 4, text: "4", length: 9, earlyStart: 0, earlyFinish: 0, lateStart: 0, lateFinish: 0, critical: false },
+//     { key: 5, text: "5", length: 2, earlyStart: 0, earlyFinish: 0, lateStart: 0, lateFinish: 0, critical: false },
+//     { key: 6, text: "6", length: 10, earlyStart: 0, earlyFinish: 0, lateStart: 0, lateFinish: 0, critical: false },
+//     { key: 7, text: "7", length: 12, earlyStart: 0, earlyFinish: 0, lateStart: 0, lateFinish: 0, critical: false },
+//     { key: 8, text: "8", length: 5, earlyStart: 0, earlyFinish: 0, lateStart: 0, lateFinish: 0, critical: false },
+//     { key: 9, text: "9", length: 17, earlyStart: 0, earlyFinish: 0, lateStart: 0, lateFinish: 0, critical: false },
+//     { key: 10, text: "10", length: 3, earlyStart: 0, earlyFinish: 0, lateStart: 0, lateFinish: 0, critical: false },
+//     { key: 11, text: "11", length: 14, earlyStart: 0, earlyFinish: 0, lateStart: 0, lateFinish: 0, critical: false },
+//     { key: 12, text: "12", length: 3, earlyStart: 0, earlyFinish: 0, lateStart: 0, lateFinish: 0, critical: false },
+//     { key: 13, text: "13", length: 10, earlyStart: 0, earlyFinish: 0, lateStart: 0, lateFinish: 0, critical: false },
+//     { key: 14, text: "14", length: 4, earlyStart: 0, earlyFinish: 0, lateStart: 0, lateFinish: 0, critical: false },
+//     { key: 15, text: "15", length: 9, earlyStart: 0, earlyFinish: 0, lateStart: 0, lateFinish: 0, critical: false },
+//     { key: 16, text: "16", length: 3, earlyStart: 0, earlyFinish: 0, lateStart: 0, lateFinish: 0, critical: false },
+// ];
+
+// var linkDataArray = [
+//     { from: 1, to: 2, mode: 'FS'},
+//     { from: 1, to: 3, mode: 'FS'},
+//     { from: 1, to: 4, mode: 'FS'},
+//     { from: 2, to: 5, mode: 'FS'},
+//     { from: 2, to: 6, mode: 'FS'},
+//     { from: 6, to: 8, mode: 'FS'},
+//     { from: 8, to: 12, mode: 'FS'},
+//     { from: 9, to: 11, mode: 'FS'},
+//     { from: 12, to: 13, mode: 'FS'},
+//     { from: 11, to: 13, mode: 'FS'},
+//     { from: 13, to: 15, mode: 'FS'},
+//     { from: 4, to: 7, mode: 'FS'},
+//     { from: 8, to: 10, mode: 'FS'},
+//     { from: 10, to: 14, mode: 'FS'},
+//     { from: 7, to: 9, mode: 'FS'},
+//     { from: 5, to: 8, mode: 'FS'},
+//     { from: 3, to: 8, mode: 'FS'},
+//     { from: 6, to: 14, mode: 'FS'},
+//     { from: 14, to: 16, mode: 'FS'},
+//     { from: 15, to: 16, mode: 'FS'},
+// ];
 
 // convert obj array to array array structure
 const graph = helpers.objArr2ArrArr(linkDataArray); 

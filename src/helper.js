@@ -19,7 +19,12 @@ export default {
     objArr2ArrArr(arr){
         let tempArr = [];
         for(let i in arr){
-            tempArr.push([String(arr[i].from), String(arr[i].to)]);
+            tempArr.push([
+                String(arr[i].from), 
+                String(arr[i].to), 
+                String(arr[i].mode), 
+                String(arr[i].lag)
+            ]);
         }
         return tempArr;
     }

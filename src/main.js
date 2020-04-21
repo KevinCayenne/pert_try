@@ -54,7 +54,6 @@ $(go.Node, "Auto",
             row: 1, column: 0, columnSpan: 3, margin: 5,
             textAlign: "center", font: "bold 14px sans-serif"
             }),
-
         $(go.TextBlock,  // lateStart
             new go.Binding("text", "lateStart"),
             { row: 2, column: 0, margin: 5, textAlign: "center" }),
@@ -87,34 +86,6 @@ function linkColorConverter(linkdata, elt){
     return pink;  // when both Link.fromNode.data.critical and Link.toNode.data.critical
 }
 
-function linkPointerFrom(linkdata, elt){
-    var link = elt.part;
-    var mode = link.mode;
-    if(mode == 'FS'){
-        return go.Spot.Right;
-    }else if(mode == 'FF'){
-        return go.Spot.Right;
-    }else if(mode == 'SF'){
-        return go.Spot.Left;
-    }else if(mode == 'SS'){
-        return go.Spot.Left;
-    }
-}
-
-function linkPointerTo(linkdata, elt){
-    var link = elt.part;
-    var mode = link.mode;
-    if(mode == 'FS'){
-        return go.Spot.Left;
-    }else if(mode == 'FF'){
-        return go.Spot.Left;
-    }else if(mode == 'SF'){
-        return go.Spot.Right;
-    }else if(mode == 'SS'){
-        return go.Spot.Right;
-    }
-}
-
 // The color of a link (including its arrowhead) is red only when both
 // connected nodes have data that is ".critical"; otherwise it is blue.
 // This is computed by the binding converter function.
@@ -125,12 +96,17 @@ myDiagram.linkTemplate =
             toEndSegmentLength: 20,
         },
         $(go.Shape,
-            { strokeWidth: 4 },
+            { strokeWidth: 3 },
             new go.Binding("stroke", "", linkColorConverter)
         ),
         $(go.Shape,  // arrowhead
             { toArrow: "Triangle", stroke: null, scale: 1.5 },
             new go.Binding("fill", "", linkColorConverter)
+        ),
+        $(go.Panel, "Auto",  // this whole Panel is a link label
+            $(go.Shape, "RoundedRectangle", { fill: "white", stroke: "gray" }),
+            $(go.TextBlock, { margin: 3 },
+            new go.Binding("text", "mode"))
         )
     );
 
@@ -140,14 +116,42 @@ myDiagram.linkTemplate =
 
 var nodeDataArray = [
     { key: 1, text: "1", length: 1, earlyStart: 0, earlyFinish: 0, lateStart: 0, lateFinish: 0, critical: false },
-    { key: 2, text: "2", length: 4, earlyStart: 0, earlyFinish: 0, lateStart: 0, lateFinish: 0, critical: false },
-    { key: 3, text: "3", length: 2, earlyStart: 0, earlyFinish: 0, lateStart: 0, lateFinish: 0, critical: false },
+    { key: 2, text: "2", length: 3, earlyStart: 0, earlyFinish: 0, lateStart: 0, lateFinish: 0, critical: false },
+    { key: 3, text: "3", length: 4, earlyStart: 0, earlyFinish: 0, lateStart: 0, lateFinish: 0, critical: false },
+    { key: 4, text: "4", length: 2, earlyStart: 0, earlyFinish: 0, lateStart: 0, lateFinish: 0, critical: false },
+    { key: 5, text: "5", length: 2, earlyStart: 0, earlyFinish: 0, lateStart: 0, lateFinish: 0, critical: false },
+    { key: 6, text: "6", length: 8, earlyStart: 0, earlyFinish: 0, lateStart: 0, lateFinish: 0, critical: false },
+    { key: 7, text: "7", length: 7, earlyStart: 0, earlyFinish: 0, lateStart: 0, lateFinish: 0, critical: false },
+    { key: 8, text: "8", length: 9, earlyStart: 0, earlyFinish: 0, lateStart: 0, lateFinish: 0, critical: false },
+    { key: 9, text: "9", length: 6, earlyStart: 0, earlyFinish: 0, lateStart: 0, lateFinish: 0, critical: false },
+    { key: 10, text: "10", length: 2, earlyStart: 0, earlyFinish: 0, lateStart: 0, lateFinish: 0, critical: false },
+    { key: 11, text: "11", length: 10, earlyStart: 0, earlyFinish: 0, lateStart: 0, lateFinish: 0, critical: false },
+    { key: 12, text: "12", length: 7, earlyStart: 0, earlyFinish: 0, lateStart: 0, lateFinish: 0, critical: false },
+    { key: 13, text: "13", length: 8, earlyStart: 0, earlyFinish: 0, lateStart: 0, lateFinish: 0, critical: false },
+    { key: 14, text: "14", length: 2, earlyStart: 0, earlyFinish: 0, lateStart: 0, lateFinish: 0, critical: false },
 ];
 
 var linkDataArray = [
-    { from: 1, to: 2, mode: 'FS'},
-    { from: 1, to: 3, mode: 'FS'},
-    { from: 2, to: 3, mode: 'FF'},
+    { from: 1, to: 2, mode: 'FS', lag: 0},
+    { from: 1, to: 3, mode: 'FS', lag: 0},
+    { from: 1, to: 3, mode: 'FS', lag: 0},
+    { from: 3, to: 4, mode: 'FF', lag: 0},
+    { from: 4, to: 5, mode: 'SS', lag: 0},
+    { from: 2, to: 6, mode: 'FS', lag: 0},
+    { from: 2, to: 7, mode: 'FS', lag: 0},
+    { from: 4, to: 8, mode: 'FS', lag: 0},
+    { from: 5, to: 9, mode: 'FS', lag: 0},
+    { from: 8, to: 9, mode: 'SS', lag: 0},
+    { from: 6, to: 10, mode: 'FS', lag: 0},
+    { from: 6, to: 11, mode: 'FS', lag: 0},
+    { from: 7, to: 11, mode: 'FS', lag: 0},
+    { from: 8, to: 11, mode: 'FS', lag: 0},
+    { from: 9, to: 13, mode: 'FS', lag: 0},
+    { from: 10, to: 14, mode: 'FS', lag: 0},
+    { from: 11, to: 14, mode: 'FS', lag: 0},
+    { from: 12, to: 14, mode: 'FS', lag: 0},
+    { from: 13, to: 12, mode: 'SS', lag: 0},
+    { from: 13, to: 14, mode: 'FS', lag: 0},
 ];
 
 // here's the data defining the graph
@@ -196,18 +200,25 @@ var linkDataArray = [
 // convert obj array to array array structure
 const graph = helpers.objArr2ArrArr(linkDataArray); 
 
+// fillEarlyItem
+Graph.fillEarlyItem(nodeDataArray, graph);
+Graph.fillEarlyItem(nodeDataArray, graph);
+Graph.fillLateItem(nodeDataArray, graph);
+Graph.addCriticalPathNew(nodeDataArray);
+// Graph.fillEarlyItem(nodeDataArray, graph);
+
 // list all paths
-var paths = Graph.paths({
-    graph,
-    from: '1',
-    to: '16'
-});
+// var paths = Graph.paths({
+//     graph,
+//     from: '1',
+//     to: '16'
+// });
 
 // add critical path
-nodeDataArray = Graph.addCriticalPath(nodeDataArray, paths); 
+// nodeDataArray = Graph.addCriticalPath(nodeDataArray, paths); 
 
 // add all dependencies items
-Graph.fillRestItem(nodeDataArray, graph);
+// Graph.fillRestItem(nodeDataArray, graph);
 
 // draw the PERT plot  
 myDiagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray); 

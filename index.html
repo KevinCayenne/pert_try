@@ -21,6 +21,14 @@
                 <span v-if="i.critical" class="alert-danger">是</span> 
                 <span v-else>否</span>
             </div>
+            <div class="col-sm-3">{{ i.position }}</div>
+        </div> 
+    </div>
+
+    <div id="link-panel" class="my-3 container shadow">
+        <div v-for="i in link" class="row border-bottom py-2">
+            <div class="col-sm-6">{{ i.from }} -> {{ i.to }}</div>
+            <div class="col-sm-6">{{ i.mode }}</div>
         </div> 
     </div>
 

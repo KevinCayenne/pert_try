@@ -178,42 +178,248 @@ export default {
         }
     },
 
-    fillEarlyItem(data, link){
-        for(let i in data){
-            if(data[i].key == 1){
-                data[i].earlyFinish = data[i].length;
-            }else{
-                var ConsArr = [];
-                let counter = 1;
-                for(let l in link){
-                    if(link[l][1] == data[i].key){
-                        let preSpot = data[link[l][0]-1];
-                        let thisSpot = data[i];
-                        let mode = link[l][2];
-                        modeSwitch(mode, preSpot, thisSpot, ConsArr, counter);
-                        counter++;
-                    }
-                }
-                // console.log(ConsArr);
-                for(let cons in ConsArr){
-                    if(!(ConsArr[cons][1] >= ConsArr[cons][0])){
-                        console.log(ConsArr[cons]);
-                        let preSpot = data[ConsArr[cons][4]-1];
-                        let thisSpot = data[ConsArr[cons][5]-1];
-                        let mode = ConsArr[cons][2];
-                        if(mode == 'FF'){
-                            thisSpot.earlyFinish = preSpot.earlyFinish; 
-                            thisSpot.earlyStart = thisSpot.earlyFinish - thisSpot.length;
-                        }else if(mode == 'SS'){
-                            thisSpot.earlyStart = preSpot.earlyStart; 
-                            thisSpot.earlyFinish = thisSpot.earlyStart + thisSpot.length;
-                        }else if(mode == 'SF'){
-                            preSpot.earlyStart = thisSpot.earlyFinish;
-                            thisSpot.earlyStart = thisSpot.earlyFinish - thisSpot.length;
-                        }
-                    }
-                }
+    nodeAdd(data, linkArr, link, num = '', text, length){
+        if(num == ''){
+            num = data.length + 1;
+        }
+        Object.keys(data).forEach(function(key){
+            if(data[key].key >= num){
+                data[key].key = data[key].key + 1
+            } 
+        });
+        // console.log(linkArr);
+        linkArr.forEach(l =>{
+            if(l.from >= num){
+                l.from = l.from + 1;
             }
+            if(l.to >= num){
+                l.to = l.to + 1;
+            }
+        });
+        link.forEach(l =>{
+            if(parseInt(l[0]) >= num){
+                l[0] = String(parseInt(l[0]) + 1);
+            }
+            if(parseInt(l[1]) >= num){
+                l[1] = String(parseInt(l[1]) + 1);
+            }
+        });
+        data.splice(num-1, 0, 
+            { key: num, text: text, length: length, earlyStart: 0, earlyFinish: 0, lateStart: 0, lateFinish: 0, critical: false, preLink: [], toLink: [], position: 'none'},
+        );
+    },
+
+    nodeDelete(data, linkArr, link, num){
+        // console.log(linkArr);
+        data.splice(num-1, 1);
+        for(let l in linkArr){
+            if(linkArr[l].from == num || linkArr[l].to == num){
+                linkArr.splice(l, 1);
+            }
+        }
+        for(let l in link){
+            if(link[l][0] == num || link[l][1] == num){
+                link.splice(l, 1);
+            }
+        }
+        Object.keys(data).forEach(function(key){
+            if(data[key].key >= num){
+                data[key].key = data[key].key - 1;
+            } 
+        });
+        linkArr.forEach(l =>{
+            if(l.from > num){
+                l.from = l.from - 1;
+            }
+            if(l.to > num){
+                l.to = l.to - 1;
+            }
+        });
+        link.forEach(l =>{
+            if(parseInt(l[0]) > num){
+                l[0] = String(parseInt(l[0]) - 1);
+            }
+            if(parseInt(l[1]) > num){
+                l[1] = String(parseInt(l[1]) - 1);
+            }
+        });
+        
+    },
+
+    linkAdd(linkArr, link, from, to, mode, lag){
+        linkArr.push(
+            { from: from, to: to, mode: mode, lag: lag}
+        );
+        link.push(
+            [String(from), String(to), mode, String(lag)]
+        );
+    },
+
+    linkDelete(linkArr, link, from, to){
+        for(let l in linkArr){
+            if(linkArr[l].from == from && linkArr[l].to == to){
+                linkArr.splice(l, 1);
+            }
+        }
+        for(let l in link){
+            if(link[l][0] == from && link[l][1] == to){
+                link.splice(l, 1);
+            }
+        }
+    },
+
+    isLinked(data, link){
+        data.forEach(element => {
+            // console.log(element);
+            link.forEach(l =>{
+                // console.log(l);
+                if(l[1] == element.key){
+                    element.preLink.push(l[0]);
+                }else if(l[0] == element.key){
+                    element.toLink.push(l[1]);
+                }
+            });
+        });
+    },
+    
+    adjustStartandEnd(data, link, linkArr){
+        data.splice(0, 0, 
+            { key: 0, text: "Start", length: 0, earlyStart: 0, earlyFinish: 0, lateStart: 0, lateFinish: 0, critical: true, preLink: [], toLink: [], position: 'S'},
+            );
+        var last = data.length;
+        data.push(
+            { key: last, text: "Finish", length: 0, earlyStart: 0, earlyFinish: 0, lateStart: 0, lateFinish: 0, critical: true, preLink: [], toLink: [], position: 'F'},
+        );
+        data.forEach(element => {
+            if(element.preLink.length == 0 && element.toLink.length == 0 && (element.text != 'Finish' && element.text != 'Start')){
+                element.position = 'none';
+            }else if(element.preLink.length > 0 && element.toLink.length > 0){
+                element.position = 'middle';
+            }else if(element.preLink.length == 0 && element.toLink.length > 0){
+                element.position = 'start';
+                link.splice(0, 0, ["0", String(element.key), "FS", "0"]);
+                linkArr.splice(0, 0, { from: 0, to: element.key, mode: 'FS', lag: 0});
+            }else if(element.preLink.length > 0 && element.toLink.length == 0){
+                element.position = 'finish';
+                link.push([String(element.key), String(last), "FS", "0"]);
+                linkArr.push({ from: element.key, to: last, mode: 'FS', lag: 0});
+            }
+        });
+        if(data.length == 3){
+            data[1].position = 'startFinish';
+            link.splice(0, 0, ["0", String(data[1].key), "FS", "0"]);
+            linkArr.splice(0, 0, { from: 0, to: data[1].key, mode: 'FS', lag: 0});
+
+            link.push([String(data[1].key), String(last), "FS", "0"]);
+            linkArr.push({ from: data[1].key, to: last, mode: 'FS', lag: 0});
+        }else if(data.length == 2){
+            link.push(["0", String(last), "FS", "0"]);
+            linkArr.push({ from: 0, to: last, mode: 'FS', lag: 0});
+        }
+        // console.log(link);
+    },
+
+    fillEarlyItem(data, link){
+        // console.log(data.length);
+        if(data.length > 2){
+            var ConsArr = [];
+            data.forEach(e => {
+                if(e.position == 'start'){
+                    e.earlyFinish = e.length;
+                }else if(e.position == 'middle'){
+                    let counter = 1;
+                    link.forEach(l => {
+                        if(e.key == l[1]){
+                            let mode = l[2];
+                            let preSpot = data[l[0]];
+                            modeSwitch(mode, preSpot, e, ConsArr, counter);
+                            counter++;
+                        }
+                    });
+                    // console.log(ConsArr);
+                }else if(e.position == 'finish'){
+                    let counter = 1;
+                    link.forEach(l => {
+                        if(e.key == l[1]){
+                            let mode = l[2];
+                            let preSpot = data[l[0]];
+                            modeSwitch(mode, preSpot, e, ConsArr, counter);
+                            counter++;
+                        }
+                    });
+                    // console.log(ConsArr);
+                }else if(e.position == 'S'){
+    
+                }else if(e.position == 'F'){
+                    let counter = 1;
+                    link.forEach(l => {
+                        if(e.key == l[1]){
+                            let mode = l[2];
+                            let preSpot = data[l[0]];
+                            modeSwitch(mode, preSpot, e, ConsArr, counter);
+                            counter++;
+                        }
+                    });
+                }else if(e.position == 'none'){
+                }
+            });
+        }
+        console.log(ConsArr);
+        // for(let i in data){
+        //     if(data[i].key == 0){
+        //         data[i].earlyFinish = data[i].length;
+        //     }else if(data[i].link == true){
+        //         var ConsArr = [];
+        //         let counter = 1;
+        //         for(let l in link){
+        //             if(link[l][1] == data[i].key){
+        //                 let preSpot = data[link[l][0]-1];
+        //                 let thisSpot = data[i];
+        //                 let mode = link[l][2];
+        //                 modeSwitch(mode, preSpot, thisSpot, ConsArr, counter);
+        //                 counter++;
+        //             }
+        //         }
+        //         // console.log(ConsArr);
+        //         for(let cons in ConsArr){
+        //             if(!(ConsArr[cons][1] >= ConsArr[cons][0])){
+        //                 console.log(ConsArr[cons]);
+        //                 let preSpot = data[ConsArr[cons][4]-1];
+        //                 let thisSpot = data[ConsArr[cons][5]-1];
+        //                 let mode = ConsArr[cons][2];
+        //                 if(mode == 'FF'){
+        //                     thisSpot.earlyFinish = preSpot.earlyFinish; 
+        //                     thisSpot.earlyStart = thisSpot.earlyFinish - thisSpot.length;
+        //                 }else if(mode == 'SS'){
+        //                     thisSpot.earlyStart = preSpot.earlyStart; 
+        //                     thisSpot.earlyFinish = thisSpot.earlyStart + thisSpot.length;
+        //                 }else if(mode == 'SF'){
+        //                     preSpot.earlyStart = thisSpot.earlyFinish;
+        //                     thisSpot.earlyStart = thisSpot.earlyFinish - thisSpot.length;
+        //                 }
+        //             }
+        //         }
+        //     }
+        // }
+
+        let errArr = [];
+        for(let i in data){
+            if(data[i].earlyStart == 0 && i != 0 && (data[i].position == 'middle' || data[i].position == 'finish')){
+                errArr.push(data[i]);
+            }
+        }
+
+        for(let con in ConsArr){
+            if(ConsArr[con][0] == 0 || ConsArr[con][1] == 0){
+                errArr.push(ConsArr[con]);
+            }
+        }
+
+        // console.log(errArr);
+        if(errArr.length == 0){
+            return 1;
+        }else{
+            this.fillEarlyItem(data, link);
         }
 
         function modeSwitch(mode, from, to, Arr, num){
@@ -222,22 +428,29 @@ export default {
                 case 'FS': 
                     if(to.earlyStart < from.earlyFinish){
                         to.earlyStart = from.earlyFinish;
+                        to.earlyFinish = to.earlyStart + to.length;
                     }
-                    to.earlyFinish = to.earlyStart + to.length;
                     innerConsArr.push(from.earlyFinish, to.earlyStart, mode, num, from.key, to.key);
                     break;
                 case 'FF':
-                    to.earlyFinish = from.earlyFinish;
-                    to.earlyStart = to.earlyFinish - to.length;
+                    if(to.earlyFinish < from.earlyFinish){
+                        to.earlyFinish = from.earlyFinish;
+                        to.earlyStart = to.earlyFinish - to.length;
+                    }
                     innerConsArr.push(from.earlyFinish, to.earlyFinish, mode, num, from.key, to.key);
                     break;
                 case 'SF':
-                    to.earlyStart = from.earlyStart;
-                    to.earlyFinish = to.earlyStart + to.length;
+                    if(to.earlyStart < from.earlyFinish){
+                        to.earlyStart = from.earlyFinish;
+                        to.earlyFinish = to.earlyStart + to.length;
+                    }
                     innerConsArr.push(from.earlyStart, to.earlyFinish, mode, num, from.key, to.key);
                     break;
                 case 'SS': 
-                    to.earlyStart = from.earlyStart;
+                    if(to.earlyStart < from.earlyStart){
+                        to.earlyStart = from.earlyStart;
+                        to.earlyStart = to.earlyFinish - to.length;
+                    }
                     to.earlyFinish = to.earlyStart + to.length;
                     innerConsArr.push(from.earlyStart, to.earlyStart, mode, num, from.key, to.key);    
                     break;
@@ -249,54 +462,122 @@ export default {
     fillLateItem(data, link){
         var originData = data;
         var revdata = [...data].reverse();
-        // console.log(originData, revdata);
-        for(let i in revdata){
-            if(i == 0){
-                revdata[i].lateFinish = revdata[i].earlyFinish;
-                revdata[i].lateStart = revdata[i].earlyStart;
-            }
-            // console.log(revdata[i].key);
-            var toConsArr = [];
-            let counter = 1;
-            for(let l in link){
-                if(link[l][0] == revdata[i].key){
-                    let thisSpot = revdata[i];
-                    let toSpot = originData[link[l][1]-1];
-                    let mode = link[l][2];
-                    // console.log(link[l], toSpot, mode);
-                    toModeSwitch(mode, thisSpot, toSpot, toConsArr, counter);
-                    counter++;
+        var toConsArr = [];
+        let counter = 1;
+
+        // console.log(revdata.length);
+        if(revdata.length > 2){
+            revdata.forEach(e => {
+                // console.log(e);
+                if(e.position == 'start'){
+                    e.lateFinish = e.lateStart + e.length;
+                }else if(e.position == 'middle'){
+                    link.forEach(l => {
+                        if(e.key == l[0]){
+                            let mode = l[2];
+                            let toSpot = originData[l[1]];
+                            toModeSwitch(mode, e, toSpot, toConsArr, counter);
+                            counter++;
+                        }
+                    });
+                }else if(e.position == 'finish'){
+                    link.forEach(l => {
+                        if(e.key == l[0]){
+                            let mode = l[2];
+                            let toSpot = originData[l[1]];
+                            toModeSwitch(mode, e, toSpot, toConsArr, counter);
+                            counter++;
+                        }
+                    });
+                }else if(e.position == 'S'){
+    
+                }else if(e.position == 'F'){
+                    e.lateFinish = e.earlyFinish;
+                    e.lateStart = e.earlyStart;
+                }else if(e.position == 'none'){
                 }
-            }
-            // console.log(toConsArr);
+            });
+
+            let errArr = [];
             for(let cons in toConsArr){
-                if(!(toConsArr[cons][1] >= toConsArr[cons][0])){
-                    // console.log(toConsArr[cons]);
+                if(toConsArr[cons][0] == 0 || toConsArr[cons][1] == 0){
+                    errArr.push(toConsArr[cons]);
                 }
+            }
+            // console.log(errArr);
+            if(errArr.length == 0){
+                return 1;
+            }else{
+                this.fillLateItem(data, link);
             }
         }
+        // console.log(originData, revdata);
+        // for(let i in revdata){
+        //     if(i == 0){
+        //         revdata[i].lateFinish = revdata[i].earlyFinish;
+        //         revdata[i].lateStart = revdata[i].earlyStart;
+        //     }
+        //     if(revdata[i].link == true){
+        //         // console.log(revdata[i].key);
+        //         var toConsArr = [];
+        //         let counter = 1;
+        //         for(let l in link){
+        //             if(link[l][0] == revdata[i].key){
+        //                 let thisSpot = revdata[i];
+        //                 let toSpot = originData[link[l][1]-1];
+        //                 let mode = link[l][2];
+        //                 // console.log(link[l], toSpot, mode);
+        //                 toModeSwitch(mode, thisSpot, toSpot, toConsArr, counter);
+        //                 counter++;
+        //             }
+        //         }
+        //         // console.log(toConsArr);
+        //         for(let cons in toConsArr){
+        //             if(!(toConsArr[cons][1] >= toConsArr[cons][0])){
+        //                 // console.log(toConsArr[cons]);
+        //             }
+        //         }
+        //     }
+        // }
 
         function toModeSwitch(mode, from, to, Arr, num){
             var innerConsArr = [];
             switch(mode){
                 case 'FS': 
-                    from.lateFinish = to.lateStart;
-                    from.lateStart = from.lateFinish - from.length;
+                    if(from.lateFinish <= 0 || (from.lateFinish > 0 && from.lateFinish > to.lateStart)){
+                        from.lateFinish = to.lateStart;
+                    }
+                    // from.lateFinish = to.lateStart;
+                    if(from.lateFinish != 0){
+                        from.lateStart = from.lateFinish - from.length;
+                    }
                     innerConsArr.push(from.lateFinish, to.lateStart, mode, num, from.key, to.key);
                     break;
                 case 'FF':
-                    from.lateFinish = to.lateFinish;
-                    from.lateStart = from.lateFinish - from.length;
+                    if(from.lateFinish <= 0 || from.lateFinish > to.lateFinish){
+                        from.lateFinish = to.lateFinish;
+                    }
+                    if(from.lateFinish != 0){
+                        from.lateStart = from.lateFinish - from.length;
+                    }
                     innerConsArr.push(from.lateFinish, to.lateFinish, mode, num, from.key, to.key);
                     break;
                 case 'SF':
-                    from.lateStart = to.lateFinish;
-                    from.lateFinish = from.lateStart + to.length;
+                    if(from.lateStart <= 0 || from.lateStart > to.lateFinish){
+                        from.lateStart = to.lateFinish;
+                    }
+                    if(from.lateStart != 0){
+                        from.lateFinish = from.lateStart + from.length;
+                    }
                     innerConsArr.push(from.lateStart, to.lateFinish, mode, num, from.key, to.key);
                     break;
                 case 'SS': 
-                    from.lateStart = to.lateStart;
-                    from.lateFinish = from.lateStart + to.length;
+                    if(from.lateStart <= 0 || from.lateStart > to.lateStart){
+                        from.lateStart = to.lateStart;
+                    }
+                    if(from.lateStart != 0){
+                        from.lateFinish = from.lateStart + from.length;
+                    }
                     innerConsArr.push(from.lateStart, to.lateStart, mode, num, from.key, to.key);    
                     break;
             }
@@ -304,12 +585,12 @@ export default {
         }
     },
 
-    addCriticalPathNew(data){
+    addCriticalPathNew(data, path){
         for(let i in data){
-            if(data[i].lateFinish == data[i].earlyFinish){
+            if(data[i].lateFinish == data[i].earlyFinish && data[i].position != 'none'){
                 data[i].critical = true;
             }
         }
-        console.log(data);
+        // console.log(data);
     }
 }

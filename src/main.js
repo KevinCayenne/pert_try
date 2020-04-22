@@ -103,57 +103,34 @@ myDiagram.linkTemplate =
             { toArrow: "Triangle", stroke: null, scale: 1.5 },
             new go.Binding("fill", "", linkColorConverter)
         ),
-        $(go.Panel, "Auto",  // this whole Panel is a link label
-            $(go.Shape, "RoundedRectangle", { fill: "white", stroke: "gray" }),
-            $(go.TextBlock, { margin: 3 },
-            new go.Binding("text", "mode"))
-        )
-    );
+        // $(go.Panel, "Auto",  // this whole Panel is a link label
+        //     $(go.Shape, "RoundedRectangle", { fill: "white", stroke: "gray" }),
+        //     $(go.TextBlock, { margin: 3 },
+        //         new go.Binding("text", "mode")
+        //     )
+        // )
+);
 
 /**
  * Example usage.
  **/
 
 var nodeDataArray = [
-    { key: 1, text: "1", length: 1, earlyStart: 0, earlyFinish: 0, lateStart: 0, lateFinish: 0, critical: false },
-    { key: 2, text: "2", length: 3, earlyStart: 0, earlyFinish: 0, lateStart: 0, lateFinish: 0, critical: false },
-    { key: 3, text: "3", length: 4, earlyStart: 0, earlyFinish: 0, lateStart: 0, lateFinish: 0, critical: false },
-    { key: 4, text: "4", length: 2, earlyStart: 0, earlyFinish: 0, lateStart: 0, lateFinish: 0, critical: false },
-    { key: 5, text: "5", length: 2, earlyStart: 0, earlyFinish: 0, lateStart: 0, lateFinish: 0, critical: false },
-    { key: 6, text: "6", length: 8, earlyStart: 0, earlyFinish: 0, lateStart: 0, lateFinish: 0, critical: false },
-    { key: 7, text: "7", length: 7, earlyStart: 0, earlyFinish: 0, lateStart: 0, lateFinish: 0, critical: false },
-    { key: 8, text: "8", length: 9, earlyStart: 0, earlyFinish: 0, lateStart: 0, lateFinish: 0, critical: false },
-    { key: 9, text: "9", length: 6, earlyStart: 0, earlyFinish: 0, lateStart: 0, lateFinish: 0, critical: false },
-    { key: 10, text: "10", length: 2, earlyStart: 0, earlyFinish: 0, lateStart: 0, lateFinish: 0, critical: false },
-    { key: 11, text: "11", length: 10, earlyStart: 0, earlyFinish: 0, lateStart: 0, lateFinish: 0, critical: false },
-    { key: 12, text: "12", length: 7, earlyStart: 0, earlyFinish: 0, lateStart: 0, lateFinish: 0, critical: false },
-    { key: 13, text: "13", length: 8, earlyStart: 0, earlyFinish: 0, lateStart: 0, lateFinish: 0, critical: false },
-    { key: 14, text: "14", length: 2, earlyStart: 0, earlyFinish: 0, lateStart: 0, lateFinish: 0, critical: false },
+    // { key: 1, text: "1", length: 1, earlyStart: 0, earlyFinish: 0, lateStart: 0, lateFinish: 0, critical: false, preLink: [], toLink: [], position: 'none'},
+    // { key: 2, text: "2", length: 3, earlyStart: 0, earlyFinish: 0, lateStart: 0, lateFinish: 0, critical: false, preLink: [], toLink: [], position: 'none'},
+    // { key: 3, text: "3", length: 4, earlyStart: 0, earlyFinish: 0, lateStart: 0, lateFinish: 0, critical: false, preLink: [], toLink: [], position: 'none'},
+    // { key: 4, text: "4", length: 2, earlyStart: 0, earlyFinish: 0, lateStart: 0, lateFinish: 0, critical: false, preLink: [], toLink: [], position: 'none'},
 ];
 
 var linkDataArray = [
-    { from: 1, to: 2, mode: 'FS', lag: 0},
-    { from: 1, to: 3, mode: 'FS', lag: 0},
-    { from: 1, to: 3, mode: 'FS', lag: 0},
-    { from: 3, to: 4, mode: 'FF', lag: 0},
-    { from: 4, to: 5, mode: 'SS', lag: 0},
-    { from: 2, to: 6, mode: 'FS', lag: 0},
-    { from: 2, to: 7, mode: 'FS', lag: 0},
-    { from: 4, to: 8, mode: 'FS', lag: 0},
-    { from: 5, to: 9, mode: 'FS', lag: 0},
-    { from: 8, to: 9, mode: 'SS', lag: 0},
-    { from: 6, to: 10, mode: 'FS', lag: 0},
-    { from: 6, to: 11, mode: 'FS', lag: 0},
-    { from: 7, to: 11, mode: 'FS', lag: 0},
-    { from: 8, to: 11, mode: 'FS', lag: 0},
-    { from: 9, to: 13, mode: 'FS', lag: 0},
-    { from: 10, to: 14, mode: 'FS', lag: 0},
-    { from: 11, to: 14, mode: 'FS', lag: 0},
-    { from: 12, to: 14, mode: 'FS', lag: 0},
-    { from: 13, to: 12, mode: 'SS', lag: 0},
-    { from: 13, to: 14, mode: 'FS', lag: 0},
+    // { from: 1, to: 3, mode: 'FS', lag: 0},
+    // { from: 1, to: 4, mode: 'FS', lag: 0},
+    // { from: 2, to: 3, mode: 'FS', lag: 0},
+    // { from: 3, to: 4, mode: 'FS', lag: 0},
+    // { from: 1, to: 2, mode: 'FS', lag: 0},
 ];
 
+// Graph.nodeDelete(nodeDataArray, linkDataArray, 2);
 // here's the data defining the graph
 // var nodeDataArray = [
 //     { key: 1, text: "1", length: 1, earlyStart: 0, earlyFinish: 0, lateStart: 0, lateFinish: 0, critical: false },
@@ -197,14 +174,44 @@ var linkDataArray = [
 //     { from: 15, to: 16, mode: 'FS'},
 // ];
 
-// convert obj array to array array structure
-const graph = helpers.objArr2ArrArr(linkDataArray); 
+const graph = helpers.objArr2ArrArr(linkDataArray); // Convert obj array to array array structure
 
-// fillEarlyItem
-Graph.fillEarlyItem(nodeDataArray, graph);
-Graph.fillEarlyItem(nodeDataArray, graph);
-Graph.fillLateItem(nodeDataArray, graph);
-Graph.addCriticalPathNew(nodeDataArray);
+Graph.nodeAdd(nodeDataArray, linkDataArray, graph, 1, 'test1', 10);
+Graph.nodeAdd(nodeDataArray, linkDataArray, graph, 2, 'test2', 4);
+Graph.nodeAdd(nodeDataArray, linkDataArray, graph, 3, 'test3', 4);
+Graph.linkAdd(linkDataArray, graph, 1, 2, "FS", 0);
+Graph.linkAdd(linkDataArray, graph, 3, 2, "FS", 0);
+Graph.linkAdd(linkDataArray, graph, 1, 3, "FS", 0);
+Graph.nodeAdd(nodeDataArray, linkDataArray, graph, '', 'test4', 5);
+Graph.linkAdd(linkDataArray, graph, 1, 4, "FS", 0);
+Graph.nodeAdd(nodeDataArray, linkDataArray, graph, '', 'test5', 9);
+Graph.linkAdd(linkDataArray, graph, 4, 5, "FS", 0);
+Graph.nodeAdd(nodeDataArray, linkDataArray, graph, '', 'test6', 3);
+Graph.linkAdd(linkDataArray, graph, 2, 6, "FS", 0);
+Graph.nodeAdd(nodeDataArray, linkDataArray, graph, '', 'test7', 3);
+Graph.linkAdd(linkDataArray, graph, 7, 1, "FS", 0);
+Graph.linkAdd(linkDataArray, graph, 7, 4, "FS", 0);
+// Graph.linkAdd(linkDataArray, graph, 5, 4, "FS", 0);
+
+// console.log(linkDataArray);
+
+Graph.isLinked(nodeDataArray, graph);
+Graph.adjustStartandEnd(nodeDataArray, graph, linkDataArray);
+
+Graph.fillEarlyItem(nodeDataArray, graph); // fill Early Item
+Graph.fillLateItem(nodeDataArray, graph); // fill Late Item
+
+// Find Paths
+var finishNodeKey = nodeDataArray.length;
+var newPath = Graph.paths({ 
+    graph,
+    from: '0',
+    to: String(finishNodeKey)
+});
+
+// Find and Add critical path
+Graph.addCriticalPathNew(nodeDataArray, newPath);
+
 // Graph.fillEarlyItem(nodeDataArray, graph);
 
 // list all paths
@@ -261,28 +268,10 @@ var controlPannel = new Vue({
     }
 });
 
-// graph try
-// var nodeDataArrayTry = [
-//     { key: 1, text: "1", length: 1, earlyStart: 0, lateFinish: 0, critical: 0 },
-//     { key: 2, text: "2", length: 3, earlyStart: 0, lateFinish: 0, critical: 0 },
-//     { key: 3, text: "3", length: 1, earlyStart: 0, lateFinish: 0, critical: 0 },
-//     { key: 4, text: "4", length: 2, earlyStart: 0, lateFinish: 0, critical: 0 },
-//     { key: 5, text: "5", length: 2, earlyStart: 0, lateFinish: 0, critical: 0 },
-//     { key: 6, text: "6", length: 1, earlyStart: 0, lateFinish: 0, critical: 0 },
-//     { key: 7, text: "7", length: 2, earlyStart: 0, lateFinish: 0, critical: 0 },
-//     { key: 8, text: "8", length: 1, earlyStart: 0, lateFinish: 0, critical: 0 }
-// ];
-
-// var linkDataArrayTry = [ 
-//     { from: 1, to: 2 },
-//     { from: 1, to: 3 },
-//     { from: 1, to: 4 },
-//     { from: 2, to: 5 },
-//     { from: 2, to: 6 },
-//     { from: 3, to: 7 },
-//     { from: 4, to: 7 },
-//     { from: 5, to: 8 },
-//     { from: 6, to: 8 },
-//     { from: 7, to: 8 }
-// ];
+var linkPannel = new Vue({
+    el: '#link-panel',
+    data: {
+        link: linkDataArray
+    }
+});
 
